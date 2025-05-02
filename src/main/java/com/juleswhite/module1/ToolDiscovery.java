@@ -148,7 +148,8 @@ public class ToolDiscovery {
         for (Parameter param : parameters) {
             // Skip special parameters
             if (param.getName().equals("actionContext") ||
-                    param.getName().equals("actionAgent")) {
+                    param.getName().equals("actionAgent") ||
+                    param.getName().startsWith("_")) {
                 continue;
             }
 

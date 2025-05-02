@@ -31,6 +31,11 @@ public class ActionRegistry {
 
     public Action getAction(String toolName, Map<String, Object> args) {
         Action action = getAction(toolName);
+
+        if(action == null && toolName.equals("terminate")) {
+            action = new Action(new Tool("terminate", "Terminate the agent", Map.of(), true));
+        }
+
         if (action != null) {
             action.setArgs(args);
         }

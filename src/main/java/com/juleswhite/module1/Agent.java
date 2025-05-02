@@ -35,6 +35,10 @@ public class Agent {
         );
     }
 
+    public ActionRegistry getActionRegistry() {
+        return actions;
+    }
+
     public Action parseAction(String response) throws Exception {
         Map<String, Object> invocation = agentLanguage.parseResponse(response);
         String toolName = (String) invocation.get("tool");
@@ -73,6 +77,10 @@ public class Agent {
     }
 
     public Memory run(String userInput, Memory memory, int maxIterations) throws Exception {
+        return run(userInput, memory, maxIterations, new HashMap<>());
+    }
+
+    public Memory run(String userInput, Memory memory, int maxIterations, Map<String,Object> actionContext) throws Exception {
         memory = memory != null ? memory : new Memory();
         setCurrentTask(memory, userInput);
 
@@ -89,7 +97,7 @@ public class Agent {
             Action action = parseAction(response);
 
             // Execute the action in the environment
-            Map<String, Object> result = environment.executeAction(action);
+            Map<String, Object> result = environment.executeAction(action, actionContext);
             System.out.println("Action Result: " + result);
 
             // Update the agent's memory with information about what happened

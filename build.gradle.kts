@@ -19,3 +19,8 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+// 👇 Add this to preserve method parameter names
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-parameters")
+}

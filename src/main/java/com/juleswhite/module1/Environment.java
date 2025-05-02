@@ -16,9 +16,14 @@ public class Environment {
     }
 
     public Map<String, Object> executeAction(Action action) {
+        return executeAction(action, new HashMap<>());
+    }
+
+    public Map<String, Object> executeAction(Action action, Map<String,Object> actionContext) {
         try {
             String toolName = action.getToolName();
             Map<String, Object> args = action.getArgs();
+
             Object binding = registry.getBinding(toolName);
 
             Object result;
@@ -26,10 +31,16 @@ public class Environment {
                 // If it's a Function interface, just call apply
                 @SuppressWarnings("unchecked")
                 Function<Map<String, Object>, Object> func = (Function<Map<String, Object>, Object>) binding;
+                args.put("actionContext", actionContext);
                 result = func.apply(args);
-            } else {
+            } else if (binding != null){
                 // If it's a method or other object, use reflection
-                result = invokeMethodWithReflection(binding, args);
+                result = invokeMethodWithReflection(binding, args, actionContext);
+            } else if (toolName.equals("terminate")) {
+                result = args.get("message");
+            }
+            else {
+                throw new RuntimeException("No binding found for tool: " + toolName);
             }
 
             return formatResult(result);
@@ -58,11 +69,11 @@ public class Environment {
         return formattedResult;
     }
 
-    public static Object invokeMethodWithReflection(Object binding, Map<String, Object> args) throws Exception {
+    public static Object invokeMethodWithReflection(Object binding, Map<String, Object> args, Map<String,Object> actionContext) throws Exception {
         if (binding instanceof Method) {
             // Type 1: Static method binding
             Method method = (Method) binding;
-            Object[] methodArgs = prepareArguments(method, args);
+            Object[] methodArgs = prepareArguments(method, args, actionContext);
             return method.invoke(null, methodArgs);
         } else {
             // Type 2: Object method binding
@@ -70,7 +81,7 @@ public class Environment {
             for (Method method : binding.getClass().getMethods()) {
                 if (method.getParameterCount() == args.size()) {
                     try {
-                        Object[] methodArgs = prepareArguments(method, args);
+                        Object[] methodArgs = prepareArguments(method, args, actionContext);
                         return method.invoke(binding, methodArgs);
                     } catch (Exception e) {
                         // Try next method
@@ -82,7 +93,7 @@ public class Environment {
         }
     }
 
-    public static Object[] prepareArguments(Method method, Map<String, Object> args) {
+    public static Object[] prepareArguments(Method method, Map<String, Object> args, Map<String,Object> actionContext) {
         Parameter[] parameters = method.getParameters();
         Object[] methodArgs = new Object[parameters.length];
 
@@ -92,6 +103,10 @@ public class Environment {
             String paramName = param.getName();
             if (args.containsKey(paramName)) {
                 methodArgs[i] = convertToType(args.get(paramName), param.getType());
+            }
+            else if (paramName.equals("actionContext")) {
+                // Special case for actionContext
+                methodArgs[i] = actionContext;
             }
         }
 

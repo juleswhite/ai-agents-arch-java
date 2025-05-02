@@ -3,6 +3,7 @@ package com.juleswhite.module1;
 import com.juleswhite.module1.LLM.Prompt;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -201,6 +202,10 @@ public class Agents {
         );
     }
 
+
+    public static Memory runAndPrintResults(Agent agent, String userInput, int maxIterations) throws Exception {
+        return runAndPrintResults(agent, userInput, maxIterations, new HashMap<>());
+    }
     /**
      * Runs an agent and prints the final memory state.
      *
@@ -210,8 +215,8 @@ public class Agents {
      * @return The final memory state
      * @throws Exception If an error occurs during execution
      */
-    public static Memory runAndPrintResults(Agent agent, String userInput, int maxIterations) throws Exception {
-        Memory finalMemory = agent.run(userInput, null, maxIterations);
+    public static Memory runAndPrintResults(Agent agent, String userInput, int maxIterations, Map<String,Object> actionContext) throws Exception {
+        Memory finalMemory = agent.run(userInput, null, maxIterations, actionContext);
 
         // Print the final memory state
         System.out.println("\nFinal Memory State:");
