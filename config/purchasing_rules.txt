@@ -1,0 +1,13 @@
+
+Purchasing Rules:
+------------------
+1. We only purchase open source software
+2. We only purchase software that is compatible with our existing systems
+3. We only purchase software that has a proven track record of reliability and security
+4. We only purchase software that is compliant with our data protection policies
+5. We only purchase software that has a clear and transparent pricing model
+6. We only purchase software that has a strong support and maintenance plan
+7. We only purchase software that has a clear and transparent licensing agreement
+8. We only purchase software that has a clear and transparent upgrade path
+9. We only purchase software that has a clear and transparent support policy
+10. We only purchase software that has a clear and transparent warranty policy
